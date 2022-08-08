@@ -19,6 +19,13 @@ async function validateToken(request, response, next) {
     return;
   }
 
+  await connection.query(
+    `
+  UPDATE sessions SET "updatedAt" = $1 WHERE token = $2
+  `,
+    [Date.now(), token]
+  );
+
   response.locals.user = user[0];
   response.locals.token = token;
 
