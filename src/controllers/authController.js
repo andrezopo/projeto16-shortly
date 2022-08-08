@@ -29,3 +29,37 @@ export async function signUp(req, res) {
     res.status(500).send("Erro interno!");
   }
 }
+
+export async function signIn(req, res) {
+  try {
+    const { email, password } = req.body;
+    const { rows: user } = await connection.query(
+      `
+    SELECT * FROM users WHERE email = $1
+    `,
+      [email]
+    );
+    if (user.length === 0) {
+      res.status(401).send("E-mail e/ou senha inválidos!");
+      return;
+    }
+    const { password: decryptedPassword } = jwt.verify(
+      user[0].password,
+      "receba"
+    );
+    if (password !== decryptedPassword) {
+      res.status(401).send("E-mail e/ou senha inválidos!");
+      return;
+    }
+    const token = jwt.sign({ email: user[0].email }, "Reconhecimento Facial");
+    await connection.query(
+      `
+    INSERT INTO sessions ("userId", token) VALUES ($1, $2)
+    `,
+      [user[0].id, token]
+    );
+    res.status(200).send(token);
+  } catch (err) {
+    res.status(500).send("Erro interno!");
+  }
+}
