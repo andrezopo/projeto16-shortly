@@ -41,3 +41,38 @@ export async function getUrlById(req, res) {
     res.status(500).send("Erro interno!");
   }
 }
+
+export async function deleteUrlById(req, res) {
+  try {
+    const { id } = req.params;
+    const { user } = res.locals;
+
+    const { rows: url } = await connection.query(
+      `
+        SELECT id, "userId", "shortUrl", url FROM "shortenedUrls" WHERE id = $1
+        `,
+      [id]
+    );
+
+    if (url.length === 0) {
+      res.status(404).send("Url encurtada não encontrada!");
+      return;
+    }
+
+    if (url[0].userId !== user.id) {
+      res.status(401).send("Esta URL não pertence ao seu usuário!");
+      return;
+    }
+
+    await connection.query(
+      `
+    DELETE FROM "shortenedUrls" WHERE id = $1 AND "userId" = $2
+    `,
+      [id, user.id]
+    );
+
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send("Erro interno!");
+  }
+}

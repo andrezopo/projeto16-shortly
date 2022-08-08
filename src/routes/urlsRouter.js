@@ -1,5 +1,9 @@
 import { Router } from "express";
-import { getUrlById, shortenUrl } from "../controllers/urlsController.js";
+import {
+  deleteUrlById,
+  getUrlById,
+  shortenUrl,
+} from "../controllers/urlsController.js";
 import validateSchema from "../middlewares/validateSchema.js";
 import validateToken from "../middlewares/validateToken.js";
 import urlSchema from "../schemas/urlSchema.js";
@@ -14,6 +18,8 @@ router.post(
 );
 
 router.get("/urls/:id", getUrlById);
+
+router.delete("/urls/:id", validateToken, deleteUrlById);
 
 // router.post("/signin", validateSchema(signInSchema), signIn);
 
