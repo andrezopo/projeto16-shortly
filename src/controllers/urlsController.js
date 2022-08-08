@@ -83,7 +83,7 @@ export async function visitShortUrl(req, res) {
 
     const { rows: shortenedUrl } = await connection.query(
       `
-        SELECT url, "visitCount" FROM "shortenedUrls" WHERE "shortUrl" = $1
+        SELECT u.id as "userId", u."visitCount" as "visitedTotal", s.url, s."visitCount" FROM "shortenedUrls" s JOIN users u ON s."userId" = u.id WHERE "shortUrl" = $1
         `,
       [shortUrl]
     );
@@ -98,6 +98,13 @@ export async function visitShortUrl(req, res) {
     UPDATE "shortenedUrls" SET "visitCount" = $1 WHERE "shortUrl" = $2
     `,
       [shortenedUrl[0].visitCount + 1, shortUrl]
+    );
+
+    await connection.query(
+      `
+      UPDATE users SET "visitCount" = $1 WHERE id = $2
+      `,
+      [shortenedUrl[0].visitedTotal + 1, shortenedUrl[0].userId]
     );
 
     res.redirect(shortenedUrl[0].url);
