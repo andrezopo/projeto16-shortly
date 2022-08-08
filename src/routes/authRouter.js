@@ -6,8 +6,8 @@ import signUpSchema from "../schemas/signUpSchema.js";
 
 const router = Router();
 
-router.post("/cadastro", validateSchema(signUpSchema), signUp);
+router.post("/signup", validateSchema(signUpSchema), signUp);
 
-router.post("/login", validateSchema(signInSchema), signIn);
+router.post("/signin", validateSchema(signInSchema), signIn);
 
 export default router;
