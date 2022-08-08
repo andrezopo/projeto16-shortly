@@ -28,3 +28,17 @@ export async function getUserInfo(req, res) {
     res.status(500).send("Erro interno!");
   }
 }
+
+export async function getRanking(req, res) {
+  try {
+    const { rows: ranking } = await connection.query(
+      `
+          SELECT u.id, u.name, COUNT(s."shortUrl") as "linksCount", u."visitCount" FROM users u LEFT JOIN "shortenedUrls" s ON u.id = s."userId" GROUP BY u.id ORDER BY "visitCount" DESC LIMIT 10
+          `
+    );
+
+    res.status(200).send(ranking);
+  } catch (err) {
+    res.status(500).send("Erro interno!");
+  }
+}
