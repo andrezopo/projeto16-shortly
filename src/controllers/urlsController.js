@@ -107,7 +107,7 @@ export async function visitShortUrl(req, res) {
       [shortenedUrl[0].visitedTotal + 1, shortenedUrl[0].userId]
     );
 
-    res.redirect(shortenedUrl[0].url);
+    res.redirect(200, shortenedUrl[0].url);
   } catch (err) {
     res.status(500).send("Erro interno!");
   }
