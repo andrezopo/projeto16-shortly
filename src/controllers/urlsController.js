@@ -76,3 +76,32 @@ export async function deleteUrlById(req, res) {
     res.status(500).send("Erro interno!");
   }
 }
+
+export async function visitShortUrl(req, res) {
+  try {
+    const { shortUrl } = req.params;
+
+    const { rows: shortenedUrl } = await connection.query(
+      `
+        SELECT url, "visitCount" FROM "shortenedUrls" WHERE "shortUrl" = $1
+        `,
+      [shortUrl]
+    );
+
+    if (shortenedUrl.length === 0) {
+      res.status(404).send("Url encurtada não encontrada!");
+      return;
+    }
+
+    await connection.query(
+      `
+    UPDATE "shortenedUrls" SET "visitCount" = $1 WHERE "shortUrl" = $2
+    `,
+      [shortenedUrl[0].visitCount + 1, shortUrl]
+    );
+
+    res.redirect(shortenedUrl[0].url);
+  } catch (err) {
+    res.status(500).send("Erro interno!");
+  }
+}

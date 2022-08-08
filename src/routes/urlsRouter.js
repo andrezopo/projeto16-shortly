@@ -3,6 +3,7 @@ import {
   deleteUrlById,
   getUrlById,
   shortenUrl,
+  visitShortUrl,
 } from "../controllers/urlsController.js";
 import validateSchema from "../middlewares/validateSchema.js";
 import validateToken from "../middlewares/validateToken.js";
@@ -21,6 +22,6 @@ router.get("/urls/:id", getUrlById);
 
 router.delete("/urls/:id", validateToken, deleteUrlById);
 
-// router.post("/signin", validateSchema(signInSchema), signIn);
+router.get("/urls/open/:shortUrl", visitShortUrl);
 
 export default router;
